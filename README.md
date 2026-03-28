@@ -5,14 +5,17 @@ An AI-powered research assistant that answers questions using your uploaded PDF 
 ## How It Works
 
 1. **PDF Ingestion** -- Load and chunk PDF documents into a ChromaDB vector store using HuggingFace embeddings.
-2. **RAG Tool** -- Retrieves relevant chunks from your documents to answer queries.
-3. **Web Search Tool** -- Falls back to Tavily web search for topics not covered in your documents.
-4. **Final Answer Tool** -- Synthesizes retrieved context into a clear, sourced answer using an LLM via OpenRouter.
+2. **Router Agent** -- An LLM-based router determines whether to use RAG or web search based on the question.
+3. **RAG Tool** -- Retrieves relevant chunks from your documents to answer queries.
+4. **Web Search Tool** -- Uses Tavily web search for topics needing current information.
+5. **Final Answer Tool** -- Synthesizes retrieved context into a clear, sourced answer using an LLM via OpenRouter.
+6. **Conversational Memory** -- Maintains chat history across questions using LangGraph's checkpoint system.
 
 ## Project Structure
 
 ```
 agent/
+  graph.py          # LangGraph agent with router, RAG, web search, and answer nodes
   rag_pipeline.py   # PDF loading, chunking, and vector store creation
   tools.py          # LangChain tools (RAG, web search, final answer)
 docs/               # Place your research PDFs here
@@ -54,7 +57,15 @@ python agent/rag_pipeline.py
 
 This loads, chunks, and indexes the documents into the vector store.
 
-### 2. Use the Tools
+### 2. Run the Agent
+
+```bash
+python agent/graph.py
+```
+
+The agent automatically routes questions to the appropriate tool (RAG or web search), generates answers, and maintains conversational memory across queries.
+
+### 3. Use Individual Tools
 
 ```python
 from agent.tools import rag_tool, web_search_tool, final_answer_tool
