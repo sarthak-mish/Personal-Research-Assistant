@@ -9,4 +9,4 @@ langchain-community
 langchain-openai 
 tiktoken
 sentence-transformers
-langchain-huggingfaces
+langchain-huggingface
