@@ -1,0 +1,22 @@
+# Environment
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Vector store data
+vectorstore/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store

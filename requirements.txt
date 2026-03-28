@@ -1,0 +1,12 @@
+langchain
+langgraph
+chromadb
+fastapi
+uvicorn
+pypdf
+tavily-python
+langchain-community 
+langchain-openai 
+tiktoken
+sentence-transformers
+langchain-huggingfaces
