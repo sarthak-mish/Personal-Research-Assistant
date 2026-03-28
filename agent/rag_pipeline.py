@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -15,8 +14,8 @@ OPENROUTER_API_KEY = os.getenv("openrouter_api_key")
 # Open Router LLM Client
 def get_llm():
     return ChatOpenAI(
-        model = "google/gemma-3-27b-it:free",
-        opennai_ap_key=OPENROUTER_API_KEY,
+        model = "deepseek/deepseek-r1-0528:free",
+        openai_api_key=OPENROUTER_API_KEY,
         openai_api_base="https://openrouter.ai/api/v1",
         temperature=0.2,
         default_headers={
