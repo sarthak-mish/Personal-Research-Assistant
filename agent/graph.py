@@ -24,7 +24,7 @@ class AgentState(TypedDict):
 # LLM Client
 def get_llm():
     return ChatOpenAI(
-        model="google/gemma-3-27b-it:free",
+        model="mistralai/mistral-small-2603",
         openai_api_key=OPENROUTER_API_KEY,
         openai_api_base="https://openrouter.ai/api/v1",
         temperature=0.2,
@@ -56,7 +56,7 @@ def router_node(state: AgentState) -> AgentState:
 
     chain = prompt | llm
     decision = chain.invoke({"question": state["question"]})
-    next_step = decision.strip().lower()
+    next_step = decision.content.strip().lower()
 
     if next_step not in ["rag", "web_search"]:
         print(f"Router Node: Invalid decision '{decision}', defaulting to 'web_search'")
@@ -85,7 +85,7 @@ def final_answer_node(state: AgentState) -> AgentState:
         "context": state["context"]
     })
 
-    updated_history = state.get("chat_history, []")
+    updated_history = state.get("chat_history", [])
     updated_history.append({
         "question": state["question"],
         "answer": answer,

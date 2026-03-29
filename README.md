@@ -18,6 +18,8 @@ agent/
   graph.py          # LangGraph agent with router, RAG, web search, and answer nodes
   rag_pipeline.py   # PDF loading, chunking, and vector store creation
   tools.py          # LangChain tools (RAG, web search, final answer)
+server/
+  mcp_server.py     # FastAPI MCP-compatible server exposing the agent as API endpoints
 docs/               # Place your research PDFs here
 vectorstore/        # Auto-generated ChromaDB storage
 ```
@@ -81,6 +83,30 @@ answer = final_answer_tool.invoke({
     "question": "What is multi-head attention?",
     "context": context
 })
+```
+
+### 4. Run the MCP Server
+
+```bash
+python server/mcp_server.py
+```
+
+This starts a FastAPI server on `http://localhost:8000` that exposes the research agent as MCP-compatible API endpoints:
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/tools` | GET | List available tools (MCP standard) |
+| `/invoke` | POST | Send a query to the agent (auto-routes to RAG or web search) |
+| `/rag_search` | POST | Direct RAG search over your PDFs |
+| `/web_search` | POST | Direct web search |
+
+**Example request:**
+
+```bash
+curl -X POST http://localhost:8000/invoke \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is multi-head attention?", "session_id": "my-session"}'
 ```
 
 ## CI
