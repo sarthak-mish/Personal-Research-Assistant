@@ -10,3 +10,4 @@ langchain-openai
 tiktoken
 sentence-transformers
 langchain-huggingface
+pydantic

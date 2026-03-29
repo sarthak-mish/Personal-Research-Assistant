@@ -15,7 +15,7 @@ VECTORSTORE_DIR = "vectorstore"
 # Shared LLM Client
 def get_llm():
     return ChatOpenAI(
-        model = "google/gemma-3-27b-it:free",
+        model = "mistralai/mistral-small-2603",
         openai_api_key=OPENROUTER_API_KEY,
         openai_api_base="https://openrouter.ai/api/v1",
         temperature=0.2,
