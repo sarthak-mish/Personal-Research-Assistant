@@ -14,9 +14,20 @@ venv/
 # Vector store data
 vectorstore/
 
+# Observability logs
+observability/metrics_log.json
+
+# Streamlit
+.streamlit/
+
 # IDE
 .vscode/
 .idea/
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.python-version

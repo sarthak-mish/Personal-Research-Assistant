@@ -24,6 +24,7 @@ def get_llm():
         openai_api_key=OPENROUTER_API_KEY,
         openai_api_base="https://openrouter.ai/api/v1",
         temperature=0.2,
+        max_tokens=4096,
         default_headers={
             "HTTP-Referer": "http://localhost",
             "X-Title": "RAG POC"

@@ -13,3 +13,5 @@ langchain-huggingface
 pydantic
 rank-bm25
 cohere
+ragas 
+datasets
