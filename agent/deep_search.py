@@ -64,7 +64,7 @@ def generate_multi_queries(question: str, n: int = 3) -> List[str]:
     variants = [q.strip() for q in response.content.split("\n") if q.strip()]
     all_queries = [question] + variants[:n]
 
-    print(f"🔄 Multi-Query variants generated:")
+    print("Multi-Query variants generated:")
     for q in all_queries:
         print(f"   → {q}")
 
