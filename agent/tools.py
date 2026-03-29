@@ -6,6 +6,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from deep_search import deep_search
+from rag_pipeline import load_documents, chunk_documents
 
 load_dotenv()
 
@@ -40,31 +42,17 @@ def get_retriver():
 @tool
 def rag_tool(query: str) -> str:
     """
-    Search though the uploaded research PDFs to answer questions.
-    Use this tool when the question is about:
-    - Transformer architecture or attention mechanism
-    - RAG (Retrieval-Augmented Generation)
-    - ReAct framework or agent reasoning
-    - Any topic likely covered in the uploaded document
+    Search through the uploaded research PDFs to answer questions.
+    Use this when the question is about transformers, attention,
+    RAG, ReAct, agents, or any topic in the uploaded documents.
+    Uses deep search with multi-query, hybrid search, and reranking.
     """
-    retreiver = get_retriver()
-    results = retreiver.invoke(query)
+    # Load chunks for BM25 (needed for hybrid search)
+    docs = load_documents("docs")
+    chunks = chunk_documents(docs)
 
-    if not results:
-        return "No relevant information found in the documents."
-    
-    # Format the retrieved results for better readability
-    context_parts = []
-    for i, doc in enumerate(results):
-        source = doc.metadata.get("source", "Unknown Source")
-        page = doc.metadata.get("page", " ? ")
-        filename = os.path.basename(source)
-        context_parts.append(
-            f"Source: {filename}, Page: {page}\nContent: {doc.page_content}\n"
-        )
-
-    context = "\n\n---\n\n".join(context_parts)
-    print(f"\nRetrieved {len(results)} relevant chunks for the query.'{query}'")
+    # Run full deep search pipeline
+    context = deep_search(query, chunks)
     return context
 
 # --- Tool#2: Web Search ---

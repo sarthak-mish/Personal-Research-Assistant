@@ -11,3 +11,5 @@ tiktoken
 sentence-transformers
 langchain-huggingface
 pydantic
+rank-bm25
+cohere

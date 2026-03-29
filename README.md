@@ -5,19 +5,21 @@ An AI-powered research assistant that answers questions using your uploaded PDF 
 ## How It Works
 
 1. **PDF Ingestion** -- Load and chunk PDF documents into a ChromaDB vector store using HuggingFace embeddings.
-2. **Router Agent** -- An LLM-based router determines whether to use RAG or web search based on the question.
+2. **Router Agent** -- An LLM-based router determines whether to use RAG, deep search, or web search based on the question.
 3. **RAG Tool** -- Retrieves relevant chunks from your documents to answer queries.
-4. **Web Search Tool** -- Uses Tavily web search for topics needing current information.
-5. **Final Answer Tool** -- Synthesizes retrieved context into a clear, sourced answer using an LLM via OpenRouter.
-6. **Conversational Memory** -- Maintains chat history across questions using LangGraph's checkpoint system.
+4. **Deep Search Tool** -- A multi-layered retrieval pipeline for complex questions: multi-query generation, hybrid search (BM25 + vector), cross-encoder reranking, and contextual compression.
+5. **Web Search Tool** -- Uses Tavily web search for topics needing current information.
+6. **Final Answer Tool** -- Synthesizes retrieved context into a clear, sourced answer using an LLM via OpenRouter.
+7. **Conversational Memory** -- Maintains chat history across questions using LangGraph's checkpoint system.
 
 ## Project Structure
 
 ```
 agent/
-  graph.py          # LangGraph agent with router, RAG, web search, and answer nodes
+  graph.py          # LangGraph agent with router, RAG, deep search, web search, and answer nodes
   rag_pipeline.py   # PDF loading, chunking, and vector store creation
-  tools.py          # LangChain tools (RAG, web search, final answer)
+  tools.py          # LangChain tools (RAG, deep search, web search, final answer)
+  deep_search.py    # Multi-layered deep search pipeline (multi-query, hybrid retrieval, reranking, compression)
 server/
   mcp_server.py     # FastAPI MCP-compatible server exposing the agent as API endpoints
 docs/               # Place your research PDFs here
@@ -65,15 +67,18 @@ This loads, chunks, and indexes the documents into the vector store.
 python agent/graph.py
 ```
 
-The agent automatically routes questions to the appropriate tool (RAG or web search), generates answers, and maintains conversational memory across queries.
+The agent automatically routes questions to the appropriate tool (RAG, deep search, or web search), generates answers, and maintains conversational memory across queries.
 
 ### 3. Use Individual Tools
 
 ```python
-from agent.tools import rag_tool, web_search_tool, final_answer_tool
+from agent.tools import rag_tool, deep_search_tool, web_search_tool, final_answer_tool
 
 # Search your documents
 context = rag_tool.invoke("What is multi-head attention?")
+
+# Deep search (multi-query + hybrid retrieval + reranking + compression)
+context = deep_search_tool.invoke("Explain the transformer architecture in detail")
 
 # Search the web
 results = web_search_tool.invoke("Latest LLM models 2025")
