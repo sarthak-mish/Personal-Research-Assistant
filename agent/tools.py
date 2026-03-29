@@ -1,5 +1,4 @@
 import os
-from agent import deep_search
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -7,6 +6,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from deep_search import deep_search
+from rag_pipeline import load_documents, chunk_documents
 
 load_dotenv()
 
