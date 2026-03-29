@@ -22,6 +22,11 @@ agent/
   deep_search.py    # Multi-layered deep search pipeline (multi-query, hybrid retrieval, reranking, compression)
 server/
   mcp_server.py     # FastAPI MCP-compatible server exposing the agent as API endpoints
+frontend/
+  app.py            # Streamlit chat UI for interacting with the research agent
+observability/
+  ragas_evaluator.py  # RAG evaluation using RAGAS metrics (faithfulness, relevancy, precision, recall)
+  metrics_store.py    # Persistent JSON-based metrics logging
 docs/               # Place your research PDFs here
 vectorstore/        # Auto-generated ChromaDB storage
 ```
@@ -113,6 +118,29 @@ curl -X POST http://localhost:8000/invoke \
   -H "Content-Type: application/json" \
   -d '{"query": "What is multi-head attention?", "session_id": "my-session"}'
 ```
+
+### 5. Run the Chat UI
+
+```bash
+streamlit run frontend/app.py
+```
+
+Opens a Streamlit-based chat interface at `http://localhost:8501` that connects to the MCP server. Features include conversation history, session management, and an observability dashboard for viewing RAGAS evaluation metrics.
+
+### 6. Evaluate RAG Quality
+
+```python
+from observability.ragas_evaluator import run_ragas_evaluation
+
+scores = run_ragas_evaluation(
+    question="What is multi-head attention?",
+    answer="Multi-head attention allows the model to...",
+    contexts=["Relevant chunk from PDF..."],
+    ground_truth="Multi-head attention is..."
+)
+```
+
+Evaluates retrieval and generation quality using RAGAS metrics: context precision, context recall, faithfulness, and answer relevancy. Scores are automatically logged to `observability/metrics_log.json`.
 
 ## CI
 

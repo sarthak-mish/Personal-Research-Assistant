@@ -1,6 +1,9 @@
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'agent'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'observability'))
+from ragas_evaluator import evaluate_rag_response
+from metrics_store import save_scores, load_all_scores, get_summary_stats
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -143,9 +146,24 @@ def invoke_agent(request: InvokeRequest):
 
         result = app_agent.invoke(initial_state, config=config)
 
+        # ── AUTO RAGAS EVALUATION ──────────────────────────────────
+        if result.get("context") and result.get("answer"):
+            try:
+                # Split context back into chunks for RAGAS
+                contexts = result["context"].split("\n\n---\n\n")
+                scores = evaluate_rag_response(
+                    question=request.query,
+                    answer=result["answer"],
+                    contexts=contexts
+                )
+                save_scores(scores)          # persist to JSON
+                result["ragas_scores"] = scores
+            except Exception as e:
+                print(f"⚠️ RAGAS eval failed (non-blocking): {e}")
+
         return InvokeResponse(
-            answer=result['answer'],
-            tool_used=result['next_step'],
+            answer=result["answer"],
+            tool_used=result["next_step"],
             session_id=request.session_id,
             timestamp=datetime.now().isoformat()
         )
@@ -183,6 +201,16 @@ def web_search(request: InvokeRequest):
         print(f"Error during Web search: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while performing Web search.")
 
+
+
+# API ENDPOINTS ----- #6 RAGAS Metrics
+@app.get('/metrics')
+def get_metrics():
+    """Return all RAGAS evaluation scores and summary stats."""
+    return {
+        "evaluations": load_all_scores(),
+        "summary": get_summary_stats()
+    }
 
 
 # ── RUN SERVER ─────────────────────────────────────────────────────
